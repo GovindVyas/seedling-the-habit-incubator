@@ -20,8 +20,9 @@ interface Habit {
 interface HabitContextType {
   habits: Habit[];
   addHabit: (habit: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>) => void;
+  addMultipleHabits: (habits: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>[]) => void;
   deleteHabit: (id: string) => void;
-  checkInHabit: (id: string, completed: boolean) => void;
+  checkInHabit: (id: string, completed: boolean, date?: string) => void;
   getHabitStats: (id: string) => { totalCheckIns: number; successRate: number };
 }
 
@@ -56,18 +57,31 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       streak: 0,
       checkIns: []
     };
-    setHabits([...habits, newHabit]);
+    setHabits(prevHabits => [...prevHabits, newHabit]);
+  };
+
+  const addMultipleHabits = (newHabits: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>[]) => {
+    const habitsToAdd = newHabits.map(habit => ({
+      ...habit,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      plantStage: 0,
+      streak: 0,
+      checkIns: []
+    }));
+    setHabits(prevHabits => [...prevHabits, ...habitsToAdd]);
   };
 
   const deleteHabit = (id: string) => {
-    setHabits(habits.filter(habit => habit.id !== id));
+    setHabits(prevHabits => prevHabits.filter(habit => habit.id !== id));
   };
 
-  const checkInHabit = (id: string, completed: boolean) => {
-    const today = new Date().toISOString().split('T')[0];
-    setHabits(habits.map(habit => {
+  const checkInHabit = (id: string, completed: boolean, date?: string) => {
+    const checkInDate = date ? new Date(date) : new Date();
+    const dateString = checkInDate.toISOString().split('T')[0];
+
+    setHabits(prevHabits => prevHabits.map(habit => {
       if (habit.id === id) {
-        const newCheckIns = [...habit.checkIns, { date: today, completed }];
+        const newCheckIns = [...habit.checkIns, { date: dateString, completed }];
         const consecutiveCheckIns = getConsecutiveCheckIns(newCheckIns);
         const newStreak = completed ? consecutiveCheckIns : 0;
         // Plant grows every day of the streak:
@@ -114,7 +128,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <HabitContext.Provider value={{ habits, addHabit, deleteHabit, checkInHabit, getHabitStats }}>
+    <HabitContext.Provider value={{ 
+      habits, 
+      addHabit, 
+      addMultipleHabits, 
+      deleteHabit, 
+      checkInHabit, 
+      getHabitStats 
+    }}>
       {children}
     </HabitContext.Provider>
   );
