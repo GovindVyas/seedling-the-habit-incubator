@@ -38,6 +38,7 @@ const HabitForm: React.FC = () => {
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter new habit"
           required
+          aria-required="true"
         />
       </div>
       <div>
@@ -47,12 +48,16 @@ const HabitForm: React.FC = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Describe your habit"
+          aria-describedby="description-hint"
         />
+        <p id="description-hint" className="text-sm text-muted-foreground mt-1">
+          Provide a brief description of your habit (optional).
+        </p>
       </div>
       <div>
         <Label htmlFor="habit-frequency">Frequency</Label>
         <Select value={frequency} onValueChange={(value: 'daily' | 'weekly') => setFrequency(value)}>
-          <SelectTrigger>
+          <SelectTrigger id="habit-frequency">
             <SelectValue placeholder="Select frequency" />
           </SelectTrigger>
           <SelectContent>
