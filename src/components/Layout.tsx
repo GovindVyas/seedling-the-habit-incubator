@@ -1,26 +1,42 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+'use client'
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+import React from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Leaf, ListTodo, Home } from 'lucide-react'
+
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname()
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="bg-primary text-primary-foreground p-4">
-        <nav>
-          <ul className="flex space-x-4">
-            <li><Link to="/" className="hover:underline">Home</Link></li>
-            <li><Link to="/habits" className="hover:underline">Habits</Link></li>
-            <li><Link to="/garden" className="hover:underline">Garden</Link></li>
-          </ul>
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white shadow-md">
+        <div className="p-4">
+          <h1 className="text-2xl font-bold text-green-600">Seedling</h1>
+        </div>
+        <nav className="mt-8">
+          <Link href="/" className={`flex items-center px-4 py-2 text-gray-700 ${pathname === '/' ? 'bg-green-100' : ''}`}>
+            <Home className="mr-3 h-5 w-5" />
+            Home
+          </Link>
+          <Link href="/habits" className={`flex items-center px-4 py-2 text-gray-700 ${pathname === '/habits' ? 'bg-green-100' : ''}`}>
+            <ListTodo className="mr-3 h-5 w-5" />
+            Habits
+          </Link>
+          <Link href="/garden" className={`flex items-center px-4 py-2 text-gray-700 ${pathname === '/garden' ? 'bg-green-100' : ''}`}>
+            <Leaf className="mr-3 h-5 w-5" />
+            Garden
+          </Link>
         </nav>
-      </header>
-      <main className="container mx-auto p-4">
+      </aside>
+
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto p-8">
         {children}
       </main>
-      <footer className="bg-secondary text-secondary-foreground p-4 text-center">
-        <p>&copy; 2023 Seedling - The Habit Incubator</p>
-      </footer>
     </div>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

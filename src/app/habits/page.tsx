@@ -23,9 +23,9 @@ export default function HabitsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-4xl font-bold mb-8">Manage Your Habits</h1>
-      <div className="flex space-x-4 mb-4">
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-4xl font-bold mb-8 text-green-600">Manage Your Habits</h1>
+      <div className="flex space-x-4 mb-8">
         <DummyDataLoader />
         <Button 
           onClick={clearAllData}
@@ -35,19 +35,22 @@ export default function HabitsPage() {
         </Button>
       </div>
       <Tabs defaultValue="list" className="mb-8">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="list">Habit List</TabsTrigger>
           <TabsTrigger value="stats">Statistics</TabsTrigger>
         </TabsList>
         <TabsContent value="list">
-          <HabitForm />
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">Your Habits</h2>
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Add New Habit</h2>
+            <HabitForm />
+          </div>
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">Your Habits</h2>
             <HabitList />
           </div>
         </TabsContent>
         <TabsContent value="stats">
-          <h2 className="text-2xl font-bold mb-4">Habit Statistics</h2>
+          <h2 className="text-2xl font-semibold mb-4">Habit Statistics</h2>
           <StatsDashboard />
         </TabsContent>
       </Tabs>

@@ -21,6 +21,12 @@ const Plant: React.FC<PlantProps> = ({ stage, size }) => {
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {/* Sky background */}
+      <rect x={0} y={0} width={size} height={size} fill="#E6F6FE" />
+      
+      {/* Sun */}
+      <circle cx={size * 0.8} cy={size * 0.2} r={size * 0.1} fill="#FDB813" />
+      
       {/* Soil */}
       <rect x={0} y={size * 0.8} width={size} height={size * 0.2} fill={colors.soil} />
       
@@ -33,7 +39,7 @@ const Plant: React.FC<PlantProps> = ({ stage, size }) => {
           y2={size * 0.8 - stemHeight}
           stroke={colors.stem}
           strokeWidth={4}
-          className='transition-all duration-1000 ease-in-out'
+          className="transition-all duration-1000 ease-in-out"
         />
       )}
       
@@ -46,7 +52,7 @@ const Plant: React.FC<PlantProps> = ({ stage, size }) => {
                  ${size / 2 - leafSize} ${size * 0.8 - stemHeight * 0.7 + leafSize} 
                  ${size / 2} ${size * 0.8 - stemHeight * 0.7 + leafSize}`}
             fill={colors.leaf}
-            className='transition-all duration-1000 ease-in-out'
+            className="transition-all duration-1000 ease-in-out"
           />
           <path
             d={`M ${size / 2} ${size * 0.8 - stemHeight * 0.7} 
@@ -54,6 +60,7 @@ const Plant: React.FC<PlantProps> = ({ stage, size }) => {
                  ${size / 2 + leafSize} ${size * 0.8 - stemHeight * 0.7 + leafSize} 
                  ${size / 2} ${size * 0.8 - stemHeight * 0.7 + leafSize}`}
             fill={colors.leaf}
+            className="transition-all duration-1000 ease-in-out"
           />
         </>
       )}
@@ -65,7 +72,7 @@ const Plant: React.FC<PlantProps> = ({ stage, size }) => {
           cy={size * 0.8 - stemHeight}
           r={flowerSize}
           fill={colors.flower}
-          className='transition-all duration-1000 ease-in-out'
+          className="transition-all duration-1000 ease-in-out"
         />
       )}
     </svg>
