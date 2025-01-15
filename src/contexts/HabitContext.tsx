@@ -79,29 +79,24 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const checkInDate = date ? new Date(date) : new Date();
     const dateString = checkInDate.toISOString().split('T')[0];
 
-    setHabits(prevHabits => prevHabits.map(habit => {
-      if (habit.id === id) {
-        const newCheckIns = [...habit.checkIns, { date: dateString, completed }];
-        const consecutiveCheckIns = getConsecutiveCheckIns(newCheckIns);
-        const newStreak = completed ? consecutiveCheckIns : 0;
-        // Plant grows every day of the streak:
-        // Stage 0: 0 days (just soil)
-        // Stage 1: 1-2 days (small stem)
-        // Stage 2: 3-4 days (stem with leaves)
-        // Stage 3: 5-6 days (bigger stem with more leaves)
-        // Stage 4: 7-8 days (flower bud)
-        // Stage 5: 9+ days (full flower)
-        const newPlantStage = Math.min(5, Math.floor(newStreak / 2));
+    setHabits(prevHabits => {
+      return prevHabits.map(habit => {
+        if (habit.id === id) {
+          const newCheckIns = [...habit.checkIns, { date: dateString, completed }];
+          const consecutiveCheckIns = getConsecutiveCheckIns(newCheckIns);
+          const newStreak = completed ? consecutiveCheckIns : 0;
+          const newPlantStage = Math.min(5, Math.floor(newStreak / 2));
 
-        return { 
-          ...habit, 
-          checkIns: newCheckIns,
-          streak: newStreak,
-          plantStage: newPlantStage
-        };
-      }
-      return habit;
-    }));
+          return { 
+            ...habit, 
+            checkIns: newCheckIns,
+            streak: newStreak,
+            plantStage: newPlantStage
+          };
+        }
+        return habit;
+      });
+    });
   };
 
   const getConsecutiveCheckIns = (checkIns: CheckIn[]): number => {

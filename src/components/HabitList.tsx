@@ -12,7 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { CheckCircle, XCircle, Trash2 } from 'lucide-react'
+import { CheckCircle, XCircle, Trash2, Info } from 'lucide-react'
+import Link from 'next/link'
 
 const HabitList: React.FC = () => {
   const { habits, deleteHabit, checkInHabit, getHabitStats } = useHabits();
@@ -26,12 +27,12 @@ const HabitList: React.FC = () => {
 
         return (
           <Card key={habit.id} className="overflow-hidden">
-            <CardHeader className="bg-green-50">
+            <CardHeader className="bg-secondary">
               <CardTitle>{habit.name}</CardTitle>
               <CardDescription>{habit.frequency}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <p className="text-sm text-gray-600 mb-2">{habit.description}</p>
+              <p className="text-sm text-muted-foreground mb-2">{habit.description}</p>
               <div className="mb-4">
                 <p className="text-sm font-medium">Streak: {habit.streak} days</p>
                 <p className="text-sm font-medium">Plant Stage: {habit.plantStage}</p>
@@ -43,7 +44,7 @@ const HabitList: React.FC = () => {
                 <p className="text-right text-sm">{successRate.toFixed(1)}%</p>
               </div>
             </CardContent>
-            <CardFooter className="bg-gray-50 flex justify-between">
+            <CardFooter className="bg-muted flex justify-between">
               {!checkedInToday && (
                 <>
                   <Button 
@@ -66,7 +67,7 @@ const HabitList: React.FC = () => {
                 </>
               )}
               {checkedInToday && (
-                <p className="text-sm text-gray-600">Already checked in today</p>
+                <p className="text-sm text-muted-foreground">Already checked in today</p>
               )}
               <Button 
                 variant="destructive" 
@@ -76,6 +77,17 @@ const HabitList: React.FC = () => {
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center"
+                asChild
+              >
+                <Link href={`/habits/${habit.id}`}>
+                  <Info className="mr-2 h-4 w-4" />
+                  Details
+                </Link>
               </Button>
             </CardFooter>
           </Card>
