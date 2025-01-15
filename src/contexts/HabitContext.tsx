@@ -1,0 +1,121 @@
+'use client'
+
+import React, { createContext, useState, useEffect, useContext } from 'react';
+
+interface CheckIn {
+  date: string;
+  completed: boolean;
+}
+
+interface Habit {
+  id: string;
+  name: string;
+  description: string;
+  frequency: 'daily' | 'weekly';
+  plantStage: number;
+  streak: number;
+  checkIns: CheckIn[];
+}
+
+interface HabitContextType {
+  habits: Habit[];
+  addHabit: (habit: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>) => void;
+  deleteHabit: (id: string) => void;
+  checkInHabit: (id: string, completed: boolean) => void;
+  getHabitStats: (id: string) => { totalCheckIns: number; successRate: number };
+}
+
+const HabitContext = createContext<HabitContextType | undefined>(undefined);
+
+export const useHabits = () => {
+  const context = useContext(HabitContext);
+  if (!context) {
+    throw new Error('useHabits must be used within a HabitProvider');
+  }
+  return context;
+};
+
+export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [habits, setHabits] = useState<Habit[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedHabits = localStorage.getItem('habits');
+      return savedHabits ? JSON.parse(savedHabits) : [];
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('habits', JSON.stringify(habits));
+  }, [habits]);
+
+  const addHabit = (habit: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>) => {
+    const newHabit = { 
+      ...habit, 
+      id: Date.now().toString(), 
+      plantStage: 0, 
+      streak: 0,
+      checkIns: []
+    };
+    setHabits([...habits, newHabit]);
+  };
+
+  const deleteHabit = (id: string) => {
+    setHabits(habits.filter(habit => habit.id !== id));
+  };
+
+  const checkInHabit = (id: string, completed: boolean) => {
+    const today = new Date().toISOString().split('T')[0];
+    setHabits(habits.map(habit => {
+      if (habit.id === id) {
+        const newCheckIns = [...habit.checkIns, { date: today, completed }];
+        const consecutiveCheckIns = getConsecutiveCheckIns(newCheckIns);
+        const newStreak = completed ? consecutiveCheckIns : 0;
+        // Plant grows every day of the streak:
+        // Stage 0: 0 days (just soil)
+        // Stage 1: 1-2 days (small stem)
+        // Stage 2: 3-4 days (stem with leaves)
+        // Stage 3: 5-6 days (bigger stem with more leaves)
+        // Stage 4: 7-8 days (flower bud)
+        // Stage 5: 9+ days (full flower)
+        const newPlantStage = Math.min(5, Math.floor(newStreak / 2));
+
+        return { 
+          ...habit, 
+          checkIns: newCheckIns,
+          streak: newStreak,
+          plantStage: newPlantStage
+        };
+      }
+      return habit;
+    }));
+  };
+
+  const getConsecutiveCheckIns = (checkIns: CheckIn[]): number => {
+    let streak = 0;
+    for (let i = checkIns.length - 1; i >= 0; i--) {
+      if (checkIns[i].completed) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  };
+
+  const getHabitStats = (id: string) => {
+    const habit = habits.find(h => h.id === id);
+    if (!habit) return { totalCheckIns: 0, successRate: 0 };
+
+    const totalCheckIns = habit.checkIns.length;
+    const successfulCheckIns = habit.checkIns.filter(ci => ci.completed).length;
+    const successRate = totalCheckIns > 0 ? (successfulCheckIns / totalCheckIns) * 100 : 0;
+
+    return { totalCheckIns, successRate };
+  };
+
+  return (
+    <HabitContext.Provider value={{ habits, addHabit, deleteHabit, checkInHabit, getHabitStats }}>
+      {children}
+    </HabitContext.Provider>
+  );
+};
