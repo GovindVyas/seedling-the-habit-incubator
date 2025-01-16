@@ -15,12 +15,13 @@ interface Habit {
   plantStage: number;
   streak: number;
   checkIns: CheckIn[];
+  progress: number;
 }
 
 interface HabitContextType {
   habits: Habit[];
-  addHabit: (habit: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>) => void;
-  addMultipleHabits: (habits: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>[]) => void;
+  addHabit: (habit: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns' | 'progress'>) => void;
+  addMultipleHabits: (habits: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns' | 'progress'>[]) => void;
   deleteHabit: (id: string) => void;
   checkInHabit: (id: string, completed: boolean, date?: string) => void;
   getHabitStats: (id: string) => { totalCheckIns: number; successRate: number };
@@ -49,24 +50,26 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('habits', JSON.stringify(habits));
   }, [habits]);
 
-  const addHabit = (habit: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>) => {
+  const addHabit = (habit: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns' | 'progress'>) => {
     const newHabit = { 
       ...habit, 
       id: Date.now().toString(), 
       plantStage: 0, 
       streak: 0,
-      checkIns: []
+      checkIns: [],
+      progress: 0
     };
     setHabits(prevHabits => [...prevHabits, newHabit]);
   };
 
-  const addMultipleHabits = (newHabits: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns'>[]) => {
+  const addMultipleHabits = (newHabits: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns' | 'progress'>[]) => {
     const habitsToAdd = newHabits.map(habit => ({
       ...habit,
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       plantStage: 0,
       streak: 0,
-      checkIns: []
+      checkIns: [],
+      progress: 0
     }));
     setHabits(prevHabits => [...prevHabits, ...habitsToAdd]);
   };
@@ -85,12 +88,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const newCheckIns = [...habit.checkIns, { date: dateString, completed }];
           const consecutiveCheckIns = getConsecutiveCheckIns(newCheckIns);
           const newStreak = completed ? consecutiveCheckIns : 0;
-          const newPlantStage = Math.min(5, Math.floor(newStreak / 2));
+          const newProgress = calculateProgress(newCheckIns);
+          const newPlantStage = calculatePlantStage(newProgress);
 
           return { 
             ...habit, 
             checkIns: newCheckIns,
             streak: newStreak,
+            progress: newProgress,
             plantStage: newPlantStage
           };
         }
@@ -109,6 +114,21 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }
     return streak;
+  };
+
+  const calculateProgress = (checkIns: CheckIn[]): number => {
+    const totalCheckIns = checkIns.length;
+    const successfulCheckIns = checkIns.filter(ci => ci.completed).length;
+    return totalCheckIns > 0 ? (successfulCheckIns / totalCheckIns) * 100 : 0;
+  };
+
+  const calculatePlantStage = (progress: number): number => {
+    if (progress >= 90) return 5;
+    if (progress >= 70) return 4;
+    if (progress >= 50) return 3;
+    if (progress >= 30) return 2;
+    if (progress >= 10) return 1;
+    return 0;
   };
 
   const getHabitStats = (id: string) => {

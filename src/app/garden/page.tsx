@@ -11,16 +11,34 @@ import {
 } from "@/components/ui/card"
 import PageTransition from '@/components/PageTransition'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+
+interface Habit {
+  id: string;
+  name: string;
+  frequency: string;
+  streak: number;
+  plantStage: number;
+}
 
 export default function GardenPage() {
   const { habits } = useHabits()
+  const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null)
+
+  const gridColumns = Math.ceil(Math.sqrt(habits.length))
 
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-primary">Your Habit Garden</h1>
         <p className="text-lg mb-8">Watch your habits grow into beautiful plants!</p>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div 
+          className="grid gap-6" 
+          style={{ 
+            gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` 
+          }}
+        >
           {habits.map((habit, index) => (
             <motion.div
               key={habit.id}
@@ -28,7 +46,10 @@ export default function GardenPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card className="overflow-hidden">
+              <Card 
+                className="overflow-hidden cursor-pointer" 
+                onClick={() => setSelectedHabit(habit)}
+              >
                 <CardHeader className="bg-secondary">
                   <CardTitle>{habit.name}</CardTitle>
                   <CardDescription>{habit.frequency}</CardDescription>
@@ -45,6 +66,21 @@ export default function GardenPage() {
           ))}
         </div>
       </div>
+      <Dialog open={!!selectedHabit} onOpenChange={() => setSelectedHabit(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedHabit?.name}</DialogTitle>
+            <DialogDescription>
+              Frequency: {selectedHabit?.frequency}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center">
+            <Plant stage={selectedHabit?.plantStage || 0} size={200} />
+            <p className="mt-4">Streak: {selectedHabit?.streak} days</p>
+            <p>Plant Stage: {selectedHabit?.plantStage}</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PageTransition>
   )
 }
