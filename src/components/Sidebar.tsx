@@ -6,31 +6,42 @@ import { usePathname } from 'next/navigation'
 import { Leaf, ListTodo, Home, Sun, Moon } from 'lucide-react'
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
+import Image from 'next/image'
 
 const Sidebar = () => {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
 
   return (
-    <aside className="w-64 bg-background border-r border-border h-screen fixed left-0 top-0 flex flex-col">
+    <aside className="w-64 bg-background border-r border-border h-screen fixed left-0 top-0 flex flex-col" aria-label="Sidebar">
       <div className="p-4">
-        <h1 className="text-2xl font-bold text-primary">Seedling</h1>
+        <div className="flex items-center">
+          <h1 className="text-2xl font-bold text-primary">Seedling</h1>
+          <Image 
+            src="/plant.png" 
+            alt="Seedling logo" 
+            width={32}
+            height={32}
+            className="ml-2" 
+            aria-hidden="true"
+          />
+        </div>
       </div>
-      <nav className="mt-8 flex-grow">
-        <Link href="/" className={`flex items-center px-4 py-2 text-foreground ${pathname === '/' ? 'bg-accent' : 'hover:bg-accent/50'}`}>
+      <nav className="mt-8 flex-grow" aria-label="Main Navigation">
+        <Link href="/" className={`flex items-center px-4 py-2 text-foreground ${pathname === '/' ? 'bg-accent' : 'hover:bg-accent/50'}`} aria-current={pathname === '/' ? 'page' : undefined}>
           <Home className="mr-3 h-5 w-5" aria-hidden="true" />
           <span>Home</span>
         </Link>
-        <Link href="/habits" className={`flex items-center px-4 py-2 text-foreground ${pathname === '/habits' ? 'bg-accent' : 'hover:bg-accent/50'}`}>
+        <Link href="/habits" className={`flex items-center px-4 py-2 text-foreground ${pathname === '/habits' ? 'bg-accent' : 'hover:bg-accent/50'}`} aria-current={pathname === '/habits' ? 'page' : undefined}>
           <ListTodo className="mr-3 h-5 w-5" aria-hidden="true" />
           <span>Habits</span>
         </Link>
-        <Link href="/garden" className={`flex items-center px-4 py-2 text-foreground ${pathname === '/garden' ? 'bg-accent' : 'hover:bg-accent/50'}`}>
+        <Link href="/garden" className={`flex items-center px-4 py-2 text-foreground ${pathname === '/garden' ? 'bg-accent' : 'hover:bg-accent/50'}`} aria-current={pathname === '/garden' ? 'page' : undefined}>
           <Leaf className="mr-3 h-5 w-5" aria-hidden="true" />
           <span>Garden</span>
         </Link>
       </nav>
-      <div className="p-4">
+      <div className="p-4 flex justify-between items-center">
         <Button
           variant="outline"
           size="icon"

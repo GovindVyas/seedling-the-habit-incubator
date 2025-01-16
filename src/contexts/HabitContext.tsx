@@ -15,6 +15,8 @@ interface Habit {
   plantStage: number;
   streak: number;
   checkIns: CheckIn[];
+  lastCheckIn: string | null;
+  checkInHabit: (date: string, completed: boolean) => void;
   progress: number;
 }
 

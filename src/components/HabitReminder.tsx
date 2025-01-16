@@ -34,7 +34,7 @@ const HabitReminder: React.FC = () => {
         <Alert key={habitName}>
           <AlertTitle>Habit Reminder</AlertTitle>
           <AlertDescription>
-            Don't forget to check in your habit: {habitName}
+            Do not forget to check in your habit: {habitName}
           </AlertDescription>
           <div className="mt-2 flex justify-end space-x-2">
             <Button onClick={() => handleCheckIn(habitName)} size="sm">
