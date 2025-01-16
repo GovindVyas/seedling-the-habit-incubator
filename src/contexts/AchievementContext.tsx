@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { useHabits } from './HabitContext';
 
 interface Achievement {
@@ -24,6 +24,16 @@ export const useAchievements = () => {
   return context;
 };
 
+interface Habit {
+  streak: number;
+  checkIns: CheckIn[];
+}
+
+interface CheckIn {
+  date: string;
+  completed: boolean;
+}
+
 const initialAchievements: Achievement[] = [
   { id: '1', title: 'First Habit', description: 'Create your first habit', unlocked: false },
   { id: '2', title: 'Streak Master', description: 'Maintain a 7-day streak', unlocked: false },
@@ -45,11 +55,7 @@ export const AchievementProvider: React.FC<{ children: React.ReactNode }> = ({ c
     localStorage.setItem('achievements', JSON.stringify(achievements));
   }, [achievements]);
 
-  useEffect(() => {
-    checkAchievements(habits);
-  }, [habits]);
-
-  const checkAchievements = (updatedHabits: any[]) => {
+  const checkAchievements = useCallback((updatedHabits: Habit[]) => {
     const newAchievements = achievements.map(achievement => {
       switch (achievement.id) {
         case '1':
@@ -62,7 +68,7 @@ export const AchievementProvider: React.FC<{ children: React.ReactNode }> = ({ c
           const today = new Date();
           const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
           const perfectWeek = updatedHabits.every(habit => 
-            habit.checkIns.filter((ci: any) => new Date(ci.date) >= lastWeek && ci.completed).length === 7
+            habit.checkIns.filter((ci) => new Date(ci.date) >= lastWeek && ci.completed).length === 7
           );
           return { ...achievement, unlocked: perfectWeek };
         default:
@@ -71,7 +77,11 @@ export const AchievementProvider: React.FC<{ children: React.ReactNode }> = ({ c
     });
 
     setAchievements(newAchievements);
-  };
+  }, [achievements]);
+
+  useEffect(() => {
+    checkAchievements(habits);
+  }, [habits, checkAchievements]);
 
   return (
     <AchievementContext.Provider value={{ achievements }}>
