@@ -10,14 +10,17 @@ const HabitReminder: React.FC = () => {
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
-    const uncheckedHabits = habits.filter(habit => habit.lastCheckIn !== today);
+    const uncheckedHabits = habits.filter(habit => {
+      const lastCheckIn = habit.checkIns[habit.checkIns.length - 1];
+      return !lastCheckIn || lastCheckIn.date !== today;
+    });
     setReminders(uncheckedHabits.map(habit => habit.name));
   }, [habits]);
 
   const handleCheckIn = (habitName: string) => {
     const habit = habits.find(h => h.name === habitName);
     if (habit) {
-      checkInHabit(habit.id);
+      checkInHabit(habit.id, true);
       setReminders(reminders.filter(name => name !== habitName));
     }
   };
