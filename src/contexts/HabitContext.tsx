@@ -23,7 +23,7 @@ interface HabitContextType {
   addHabit: (habit: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns' | 'progress'>) => void;
   addMultipleHabits: (habits: Omit<Habit, 'id' | 'plantStage' | 'streak' | 'checkIns' | 'progress'>[]) => void;
   deleteHabit: (id: string) => void;
-  checkInHabit: (id: string, completed: boolean) => void;
+  checkInHabit: (id: string, completed: boolean, date?: string) => void;
   getHabitStats: (id: string) => { totalCheckIns: number; successRate: number };
 }
 
@@ -78,8 +78,8 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setHabits(prevHabits => prevHabits.filter(habit => habit.id !== id));
   };
 
-  const checkInHabit = (id: string, completed: boolean) => {
-    const checkInDate = new Date();
+  const checkInHabit = (id: string, completed: boolean, date?: string) => {
+    const checkInDate = date ? new Date(date) : new Date();
     const dateString = checkInDate.toISOString().split('T')[0];
 
     setHabits(prevHabits => {
