@@ -14,9 +14,22 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
+interface Habit {
+  id: string;
+  name: string;
+  description: string;
+  frequency: 'daily' | 'weekly';
+  plantStage: number;
+  streak: number;
+  checkIns: Array<{
+    date: string;
+    completed: boolean;
+  }>;
+}
+
 export default function GardenPage() {
   const { habits } = useHabits()
-  const [selectedHabit, setSelectedHabit] = useState<any>(null)
+  const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null)
 
   const gridColumns = Math.ceil(Math.sqrt(habits.length))
 
