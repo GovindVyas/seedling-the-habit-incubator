@@ -1,16 +1,12 @@
 import { Suspense } from 'react'
 import { Skeleton } from "@/components/ui/skeleton"
 import HabitDetailPage from '@/components/HabitDetailPage'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 
-interface PageParams {
-  id: string;
-}
-
-interface Props {
-  params: PageParams;
-  searchParams: { [key: string]: string | string[] | undefined };
+type Props = {
+  params: { id: string }
 }
 
 export default function Page({ params }: Props) {
@@ -19,4 +15,10 @@ export default function Page({ params }: Props) {
       <HabitDetailPage id={params.id} />
     </Suspense>
   )
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return {
+    title: `Habit Details - ${params.id}`,
+  }
 }
