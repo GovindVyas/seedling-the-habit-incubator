@@ -6,7 +6,10 @@ import type { Metadata } from 'next'
 export const dynamic = 'force-dynamic'
 
 type Props = {
-  params: { id: string }
+  params: {
+    id: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export default function Page({ params }: Props) {
