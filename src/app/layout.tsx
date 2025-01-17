@@ -7,7 +7,7 @@ import Sidebar from '@/components/Sidebar'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import KeyboardShortcuts from '@/components/KeyboardShortcuts'
 import AccessibilityMenu from '@/components/AccessibilityMenu'
-import { register as registerServiceWorker } from '@/utils/serviceWorkerRegistration'
+import { register as registerServiceWorker } from '../utils/serviceWorkerRegistration'
 
 const inter = Inter({ subsets: ['latin'] })
 
